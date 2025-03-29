@@ -1,0 +1,10 @@
+#make store
+mkdir ~/certs
+cd ~/certs
+
+#generate priv key
+openssl genrsa -des3 -out LtlCA.key 4096
+
+#generate root certs
+openssl req -x509 -new -nodes -key LtlCA.key -sha256 -days 1825 -out LtlCA.pem
+

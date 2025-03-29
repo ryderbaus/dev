@@ -1,0 +1,14 @@
+#Generate priv key
+openssl genrsa -out site.test.key 2048
+
+#Create CSR
+openssl req -new -key site.test.key -out site.test.csr
+
+#Create x509 conf file
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = site.test

@@ -1,0 +1,96 @@
+##String Extensions##
+
+String extensions simply have a string which contains either the value itself or how it is obtained.
+For example:
+nsComment="This is a Comment"
+
+##Multi-valued Extensions##
+
+Multi-valued extensions have a short form and a long form. The short form is a list of names and values:
+basicConstraints=critical,CA:true,pathlen:1
+
+The long form allows the values to be placed in a separate section:
+basicConstraints=critical,@bs_section
+[bs_section]
+CA=true
+pathlen=1
+
+The pathlen parameter indicates the maximum number of CAs that can appear below this one in a chain.
+ So if you have a CA with a pathlen of zero it can only be used to sign end user certificates and not further CAs.
+
+ ##Key Usage##
+
+ Key usage is a multi valued extension consisting of a list of names of the permitted key usages.
+The supporte names are: digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment, keyAgreement, keyCertSign, cRLSign, encipherOnly and decipherOnly.
+
+Examples:
+keyUsage=digitalSignature, nonRepudiation
+keyUsage=critical, keyCertSign
+
+##Extended Key Usage##
+
+These can either be object short names or the dotted numerical form of OIDs.
+While any OID can be used only certain values make sense.
+In particular the following PKIX, NS and MS values are meaningfu
+
+Value                  Meaning
+-----                  -------
+serverAuth             SSL/TLS Web Server Authentication.
+clientAuth             SSL/TLS Web Client Authentication.
+codeSigning            Code signing.
+emailProtection        E-mail Protection (S/MIME).
+timeStamping           Trusted Timestamping
+msCodeInd              Microsoft Individual Code Signing (authenticode)
+msCodeCom              Microsoft Commercial Code Signing (authenticode)
+msCTLSign              Microsoft Trust List Signing
+msSGC                  Microsoft Server Gated Crypto
+msEFS                  Microsoft Encrypted File System
+nsSGC                  Netscape Server Gated Crypto
+
+
+Examples:
+extendedKeyUsage=critical,codeSigning,1.2.3.4
+extendedKeyUsage=nsSGC,msSGC
+
+##Subject Key Identifier##
+Either the word hash which will automatically follow the guidelines in RFC3280 or a hex string giving the extension value to include. 
+The use of the hex string is strongly discouraged
+
+Example:
+subjectKeyIdentifier=hash
+
+##Authority Key Identifier##
+Authority key identifier extension permits two options. 
+keyid and issuer: both can take the optional value "always"
+If the keyid option is present an attempt is made to copy the subject key identifier from the parent certificate. 
+If the value "always" is present then an error is returned if the option fails.
+The issuer option copies the issuer and serial number from the issuer certificate.
+This will only be done if the keyid option fails or is not included unless the "always" flag will always include the value.
+
+Example:
+authorityKeyIdentifier=keyid,issuer
+
+##Subject Alternative Name##
+
+The subject alternative name extension allows various literal values to be included in the configuration file. 
+These include email (an email address) URI a uniform resource indicator, DNS (a DNS domain name), RID (a registered ID: OBJECT IDENTIFIER), IP (an IP address), dirName (a distinguished name) and otherName.
+
+The value of dirName should point to a section containing the distinguished name to use as a set of name value pairs. 
+Multi values AVAs can be formed by prefacing the name with a + character.
+otherName can include arbitrary data associated with an OID: 
+the value should be the OID followed by a semicolon and the content in standard ASN1_generate_nconf(3) format
+
+Examples:
+subjectAltName=email:copy,email:my@other.address,URI:http://my.url.here/
+subjectAltName=IP:192.168.7.1
+subjectAltName=IP:13::17
+subjectAltName=email:my@other.address,RID:1.2.3.4
+subjectAltName=otherName:1.2.3.4;UTF8:some other identifier
+
+subjectAltName=dirName:dir_sect
+
+[dir_sect]
+C=UK
+O=My Organization
+OU=My Unit
+CN=My Name
